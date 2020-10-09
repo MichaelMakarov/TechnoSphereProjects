@@ -1,29 +1,18 @@
 ﻿#include "../include/Process.h"
-#include <iostream>
-#include <exception>
+#include <stdexcept>
 
-#define PIPE_READ 0
-#define PIPE_WRITE 1
 
 Process::Process(const std::string& path)
 {
-	if (pipe(m_forwPipeFileDesc) == -1 ||
-		pipe(m_backPipeFileDesc) == -1)
-		throw std::runtime_error("Failed to create forward and backward pipes!");
-	for (size_t i = 0; i < 4; ++i)
-		m_isClosed[i] = false;
 	m_thisPid = getpid();
 	m_childPid = fork();
 	if (m_childPid < 0)
 		throw std::runtime_error("Failed to create a process!");
 	else if (m_childPid == 0)
 	{
-		std::cout << "Child process successfully created!\n";
-		std::cout << "Child pid = " << getpid() << ", parent pid = " << getppid() << std::endl;
-		
-		if (dup2(m_forwPipeFileDesc[PIPE_READ], STDIN_FILENO) == -1)
+		if (dup2(m_fdForward.GetReadPipe(), STDIN_FILENO) == -1)
 			throw std::runtime_error("Failed to create stdin!");
-		if (dup2(m_backPipeFileDesc[PIPE_WRITE], STDOUT_FILENO) == -1)
+		if (dup2(m_fdBackward.GetWritePipe(), STDOUT_FILENO) == -1)
 			throw std::runtime_error("Failed to create stdout!");
 		if (execl(path.c_str(), nullptr) == -1)
 		{
@@ -40,7 +29,7 @@ Process::~Process()
 
 size_t Process::write(const void* pData, size_t length)
 {
-	return ::write(m_forwPipeFileDesc[PIPE_WRITE], pData, length);
+	return ::write(m_fdForward.GetWritePipe(), pData, length);
 }
 
 void Process::writeExact(const void* pData, size_t length)
@@ -53,7 +42,7 @@ void Process::writeExact(const void* pData, size_t length)
 
 size_t Process::read(void* pData, size_t length)
 {
-	return ::read(m_backPipeFileDesc[PIPE_READ], pData, length);
+	return ::read(m_fdBackward.GetReadPipe(), pData, length);
 }
 
 void Process::readExact(void* pData, size_t length)
@@ -66,18 +55,13 @@ void Process::readExact(void* pData, size_t length)
 
 void Process::closeStdin()
 {
-	::close(m_forwPipeFileDesc[PIPE_WRITE]);
-	::close(m_forwPipeFileDesc[PIPE_READ]);
-	m_isClosed[0] = m_isClosed[1] = true;
+	m_fdForward.Close();
 }
 
 void Process::close()
 {
-	if (!m_isClosed[0])
-		closeStdin();
-	if (!m_isClosed[2])
-	{
-		::close(m_backPipeFileDesc[PIPE_WRITE]);
-		::close(m_backPipeFileDesc[PIPE_READ]);
-		m_isClosed[2] = m_isClosed[3] = true;
+	if (m_fdForward.IsClosed())
+		m_fdForward.Close();
+	if (m_fdBackward.IsClosed())
+		m_fdBackward.Close();
 }

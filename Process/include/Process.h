@@ -2,7 +2,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
+#include "FileDesc.h"
 #include <string>
 
 class Process
@@ -10,6 +10,9 @@ class Process
 public:
 	explicit Process(const std::string& path);
 	~Process();
+	Process(const Process& p) {}
+
+	Process operator = (const Process& p) { return *this; }
 
 	size_t write(const void* pData, size_t length);
 	void writeExact(const void* pData, size_t length);
@@ -21,9 +24,8 @@ public:
 	void close();
 
 private:
-	int m_forwPipeFileDesc[2];
-	int m_backPipeFileDesc[2];
+	FileDesc m_fdForward;
+	FileDesc m_fdBackward;
 	pid_t m_thisPid;
 	pid_t m_childPid;
-	bool m_isClosed[4];
 };
