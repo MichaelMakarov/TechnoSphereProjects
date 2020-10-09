@@ -60,8 +60,8 @@ void Process::closeStdin()
 
 void Process::close()
 {
-	if (m_fdForward.IsClosed())
+	if (!m_fdForward.IsClosed())
 		m_fdForward.Close();
-	if (m_fdBackward.IsClosed())
+	if (!m_fdBackward.IsClosed())
 		m_fdBackward.Close();
 }
