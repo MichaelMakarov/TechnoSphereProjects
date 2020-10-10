@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../include/Process.h"
+#include <cstring>
 
 int main()
 {
@@ -8,7 +9,7 @@ int main()
     Process p("TestProg");
     p.read(str, len);
     std::cout << str << std::endl;
-    p.write(out, sizeof(out) / sizeof(char));
+    p.write(out, strlen(out) * sizeof(char));
     p.read(str, len);
     std::cout << str << std::endl;
     return 0;

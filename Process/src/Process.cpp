@@ -1,5 +1,6 @@
 ﻿#include "../include/Process.h"
 #include <stdexcept>
+#include <memory>
 
 
 Process::Process(const std::string& path)
@@ -34,10 +35,11 @@ size_t Process::write(const void* pData, size_t length)
 
 void Process::writeExact(const void* pData, size_t length)
 {
-	size_t len;
+	size_t len = 0;
+	const char* pStr = static_cast<const char*>(pData);
 	do {
-		len = write(pData, length);
-	} while (len != length);
+		len += write(&(pStr[len]), length - len);
+	} while (len < length - 1);
 }
 
 size_t Process::read(void* pData, size_t length)
@@ -47,10 +49,14 @@ size_t Process::read(void* pData, size_t length)
 
 void Process::readExact(void* pData, size_t length)
 {
-	size_t len = 0;
+	size_t len = 0, cur;
+	char* pStr = static_cast<char*>(pData);
+	std::unique_ptr<char[]> pBuf {new char[length]};
 	do {
-		len += read(pData, length);
-	} while (len != length);
+		cur = read(pBuf.get(), length);
+		for (size_t i = 0; i < cur && len < length; ++i, ++len)
+			pStr[len] = pBuf[i];
+	} while (len < length);
 }
 
 void Process::closeStdin()
