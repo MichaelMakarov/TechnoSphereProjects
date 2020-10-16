@@ -11,8 +11,13 @@ namespace log
 
     void StdoutLogger::Flush() const {}
 
-    void InitWithStdoutLogger(const LogLevel level)
+    bool InitWithStdoutLogger(const LogLevel level)
     {
-        gl_pLogger = std::make_unique<StdoutLogger>(level);
+        if (!gl_pLogger)
+        {
+            gl_pLogger = std::make_unique<StdoutLogger>(level);
+            return true;
+        }
+        return false;
     }
 }

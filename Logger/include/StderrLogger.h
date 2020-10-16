@@ -19,5 +19,5 @@ namespace log
         void Flush() const override;
     };
 
-    void InitWithStderrLogger(const LogLevel level);
+    bool InitWithStderrLogger(const LogLevel level);
 }

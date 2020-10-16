@@ -21,5 +21,5 @@ namespace log
         void Flush() const override;
     };
 
-    void InitWithFileLogger(const LogLevel level, const std::string& filePath);
+    bool InitWithFileLogger(const LogLevel level, const std::string& filePath);
 }

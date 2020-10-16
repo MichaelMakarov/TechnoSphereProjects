@@ -29,8 +29,13 @@ namespace log
         fouts[m_index].flush();
     }
 
-    void InitWithFileLogger(const LogLevel level, const std::string& filePath)
+    bool InitWithFileLogger(const LogLevel level, const std::string& filePath)
     {
-        gl_pLogger = std::make_unique<FileLogger>(level, filePath);
+        if (!gl_pLogger)
+        {
+            gl_pLogger = std::make_unique<FileLogger>(level, filePath);
+            return true;
+        }
+        return false;
     }
 }
