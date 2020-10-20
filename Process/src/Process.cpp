@@ -75,9 +75,7 @@ void Process::close()
 {
 	if (!m_isClosed[0])
 		closeStdin();
-	if (!m_isClosed[2])
-	{
-		::close(m_backPipeFileDesc[PIPE_WRITE]);
-		::close(m_backPipeFileDesc[PIPE_READ]);
-		m_isClosed[2] = m_isClosed[3] = true;
+	::close(m_backPipeFileDesc[PIPE_WRITE]);
+	::close(m_backPipeFileDesc[PIPE_READ]);
+	m_isClosed[2] = m_isClosed[3] = true;
 }
