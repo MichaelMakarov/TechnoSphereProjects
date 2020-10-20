@@ -1,8 +1,0 @@
-cmake_minimum_required (VERSION 3.8)
-project (Process)
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_STANDARD_REQUIRED True)
-add_library (Process src/Process.cpp include/Process.h)
-add_executable (Test test/main.cpp)
-target_link_libraries (Test Process)
-add_executable (TestProg test/TestProg.cpp)
