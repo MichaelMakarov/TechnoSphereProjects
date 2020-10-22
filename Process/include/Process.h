@@ -1,7 +1,4 @@
 #pragma once
-
-#include <sys/types.h>
-#include <sys/wait.h>
 #include "FileDesc.h"
 #include <string>
 
@@ -10,9 +7,9 @@ class Process
 public:
 	explicit Process(const std::string& path);
 	~Process();
-	Process(const Process& p) {}
+	Process(const Process& p) = delete;
 
-	Process operator = (const Process& p) { return *this; }
+	Process operator = (const Process& p) = delete;
 
 	size_t write(const void* pData, size_t length);
 	void writeExact(const void* pData, size_t length);
@@ -24,8 +21,8 @@ public:
 	void close();
 
 private:
-	FileDesc m_fdForward;
-	FileDesc m_fdBackward;
-	pid_t m_thisPid;
-	pid_t m_childPid;
+	FileDesc _fdForward;
+	FileDesc _fdBackward;
+	pid_t _thisPid;
+	pid_t _childPid;
 };

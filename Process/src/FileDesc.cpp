@@ -1,11 +1,14 @@
-#include "../include/FileDesc.h"
+#include "FileDesc.h"
+#include "unistd.h"
 #include <stdexcept>
 
 FileDesc::FileDesc()
 {
-    if (pipe(m_pipes) == -1)
+    int pipes[2];
+    if (pipe(pipes) == -1)
         throw std::runtime_error("Failed to create pipes!");
-    m_isClosed = false;
+    _pipeRead = pipes[0];
+    _pipeWrite = pipes[1];
 }
 
 FileDesc::~FileDesc()
@@ -13,27 +16,37 @@ FileDesc::~FileDesc()
     Close();
 }
 
-void FileDesc::Close()
+void FileDesc::ClosePipe(int& pipe)
 {
-    if (!m_isClosed)
+    if (pipe != -1)
     {
-        close(m_pipes[0]);
-        close(m_pipes[1]);
-        m_isClosed =  true;
+        close(pipe);
+        pipe = -1;
     }
 }
 
-const int FileDesc::GetReadPipe()
+void FileDesc::Close()
 {
-    return m_pipes[PIPE_READ];
+    CloseReadPipe();
+    CloseWritePipe();
 }
 
-const int FileDesc::GetWritePipe()
+void FileDesc::CloseReadPipe()
 {
-    return m_pipes[PIPE_WRITE];
+    ClosePipe(_pipeRead);
 }
 
-bool FileDesc::IsClosed()
+void FileDesc::CloseWritePipe()
 {
-    return m_isClosed;
+    ClosePipe(_pipeWrite);
+}
+
+int FileDesc::GetReadPipe()
+{
+    return _pipeRead;
+}
+
+int FileDesc::GetWritePipe()
+{
+    return _pipeWrite;
 }

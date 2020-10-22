@@ -1,26 +1,25 @@
 #pragma once
-#include "unistd.h"
-
-#define PIPE_READ 0
-#define PIPE_WRITE 1
 
 class FileDesc
 {
     private:
-    int m_pipes[2];
-    bool m_isClosed;
+    int _pipeRead;
+    int _pipeWrite;
+
+    void ClosePipe(int& pipe);
 
     public:
     FileDesc();
-    FileDesc(const FileDesc& fd) {}
+    FileDesc(const FileDesc& fd) = delete;
     ~FileDesc();
 
-    FileDesc& operator = (const FileDesc& fd) { return *this; }
+    FileDesc& operator = (const FileDesc& fd) = delete;
 
     void Close();
 
-    const int GetReadPipe();
-    const int GetWritePipe();
+    int GetReadPipe();
+    int GetWritePipe();
 
-    bool IsClosed();
+    void CloseReadPipe();
+    void CloseWritePipe();
 };
