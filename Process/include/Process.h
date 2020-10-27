@@ -23,6 +23,5 @@ public:
 private:
 	FileDesc _fdForward;
 	FileDesc _fdBackward;
-	pid_t _thisPid;
 	pid_t _childPid;
 };
