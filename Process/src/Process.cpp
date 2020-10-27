@@ -18,7 +18,6 @@ Process::Process(const std::string& path)
 			std::exit(-1);
 		if (execl(path.c_str(), path.c_str(), nullptr) == -1)
 			std::exit(-1);
-		std::cout << "pid: " << _childPid << std::endl;
 	}
 }
 
@@ -44,9 +43,7 @@ void Process::writeExact(const void* pData, size_t length)
 		auto l = write(pStr + length, length - len);
 		if (l == 0) break;
 		len += l;
-		std::cout << std::ends << len;
 	}
-	std::cout << "total written: " << std::endl;
 }
 
 size_t Process::read(void* pData, size_t length)
@@ -66,10 +63,7 @@ void Process::readExact(void* pData, size_t length)
 		auto l = read(pStr + len, length - len);
 		if (l == 0) break;
 		len += l;
-		//len += read(pStr + len, length - len);
-		std::cout << std::ends << len;
 	}
-	std::cout << "total read: " << std::endl;
 }
 
 void Process::closeStdin()
